@@ -43,4 +43,10 @@ public class ProveedorController {
     public Proveedor desactivar(@PathVariable Long id) {
         return proveedorService.desactivar(id);
     }
+
+    @PutMapping("/{id}/activar")
+    public Proveedor activar(@PathVariable Long id) {
+    return proveedorService.activar(id);
+}
+
 }

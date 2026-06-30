@@ -152,6 +152,137 @@ vistas.dashboard = async () => {
 };
 
 
+// ---------- Proveedores ----------
+vistas.proveedores = async () => {
+  content.innerHTML = `<div class="page-head"><div><h1>Proveedores</h1>
+    <p>Quienes entregan madera a ECOMADERAS ROSALES</p></div></div>
+    <div class="panel">
+      <h2 id="provFormTitle">Nuevo proveedor</h2>
+      <div class="form-grid">
+        <div class="field"><label>Nombre *</label><input id="pNombre"></div>
+        <div class="field"><label>Cédula jurídica</label><input id="pCedula"></div>
+        <div class="field"><label>Teléfono</label><input id="pTel"></div>
+        <div class="field"><label>Correo</label><input id="pCorreo"></div>
+        <div class="field"><label>Dirección</label><input id="pDir"></div>
+      </div>
+      <div class="actions-row">
+        <button class="btn" id="pGuardar">Guardar</button>
+        <button class="btn secondary hidden" id="pCancelar">Cancelar</button>
+      </div>
+    </div>
+
+    <div class="panel"><div class="table-wrap"><table>
+      <thead>
+        <tr><th>ID</th><th>Nombre</th><th>Cédula</th><th>Teléfono</th><th>Correo</th><th>Estado</th><th></th></tr>
+      </thead>
+      <tbody id="provBody"><tr><td colspan="7" class="empty">Cargando…</td></tr></tbody>
+    </table></div></div>`;
+
+  let editId = null;
+
+  const limpiar = () => {
+    editId = null;
+    ['pNombre', 'pCedula', 'pTel', 'pCorreo', 'pDir'].forEach(i => $('#' + i).value = '');
+    $('#provFormTitle').textContent = 'Nuevo proveedor';
+    $('#pCancelar').classList.add('hidden');
+  };
+
+  const cargar = async () => {
+    const lista = await api('GET', 'proveedores');
+
+    $('#provBody').innerHTML = lista.length ? lista.map(p => `
+      <tr>
+        <td>${p.id}</td>
+        <td>${esc(p.nombre)}</td>
+        <td>${esc(p.cedulaJuridica)}</td>
+        <td>${esc(p.telefono)}</td>
+        <td>${esc(p.correo)}</td>
+        <td><span class="tag ${p.estado ? 'ok' : 'off'}">${p.estado ? 'Activo' : 'Inactivo'}</span></td>
+        <td>
+          <button class="link-btn" data-edit="${p.id}">Editar</button> ·
+          ${p.estado
+            ? `<button class="link-btn" data-del="${p.id}">Desactivar</button>`
+            : `<button class="link-btn" data-act="${p.id}">Activar</button>`}
+        </td>
+      </tr>
+    `).join('') : '<tr><td colspan="7" class="empty">Sin proveedores aún</td></tr>';
+
+    $('#provBody').querySelectorAll('[data-edit]').forEach(b => b.onclick = () => {
+      const p = lista.find(x => x.id == b.dataset.edit);
+      editId = p.id;
+
+      $('#pNombre').value = p.nombre || '';
+      $('#pCedula').value = p.cedulaJuridica || '';
+      $('#pTel').value = p.telefono || '';
+      $('#pCorreo').value = p.correo || '';
+      $('#pDir').value = p.direccion || '';
+
+      $('#provFormTitle').textContent = 'Editar proveedor #' + p.id;
+      $('#pCancelar').classList.remove('hidden');
+      window.scrollTo(0, 0);
+    });
+
+    $('#provBody').querySelectorAll('[data-del]').forEach(b => b.onclick = async () => {
+      if (!confirm('¿Desactivar este proveedor?')) return;
+
+      try {
+        await api('DELETE', 'proveedores/' + b.dataset.del);
+        toast('Proveedor desactivado', 'ok');
+        cargar();
+      } catch (e) {
+        toast(e.message, 'err');
+      }
+    });
+
+    $('#provBody').querySelectorAll('[data-act]').forEach(b => b.onclick = async () => {
+      if (!confirm('¿Activar este proveedor?')) return;
+
+      try {
+        await api('PUT', 'proveedores/' + b.dataset.act + '/activar');
+        toast('Proveedor activado', 'ok');
+        cargar();
+      } catch (e) {
+        toast(e.message, 'err');
+      }
+    });
+  };
+
+  $('#pGuardar').onclick = async () => {
+    const body = {
+      nombre: $('#pNombre').value.trim(),
+      cedulaJuridica: $('#pCedula').value.trim(),
+      telefono: $('#pTel').value.trim(),
+      correo: $('#pCorreo').value.trim(),
+      direccion: $('#pDir').value.trim()
+    };
+
+    if (!body.nombre) {
+      toast('El nombre es obligatorio', 'err');
+      return;
+    }
+
+    try {
+      if (editId) {
+        await api('PUT', 'proveedores/' + editId, body);
+        toast('Proveedor actualizado', 'ok');
+      } else {
+        await api('POST', 'proveedores', body);
+        toast('Proveedor creado', 'ok');
+      }
+
+      limpiar();
+      cargar();
+    } catch (e) {
+      toast(e.message, 'err');
+    }
+  };
+
+  $('#pCancelar').onclick = limpiar;
+
+  cargar();
+};
+
+
 // ---------- Clientes ----------
 vistas.clientes = async () => {
   content.innerHTML = `<div class="page-head"><div><h1>Clientes</h1>

@@ -52,4 +52,11 @@ public class ProveedorService {
         p.setEstado(false);
         return proveedorRepository.save(p);
     }
+
+    public Proveedor activar(Long id) {
+    Proveedor p = buscarPorId(id);
+    p.setEstado(true);
+    return proveedorRepository.save(p);
+}
+
 }
