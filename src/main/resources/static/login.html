@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ECOMADERAS ROSALES · Iniciar sesión</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="brand">
+        <span class="logo"></span>
+        <div>
+          <h1>ECOMADERAS ROSALES</h1>
+        </div>
+      </div>
+      <p class="sub">Sistema de gestión y rendimiento de madera</p>
+
+      <div class="field" style="margin-bottom:12px;">
+        <label for="username">Usuario</label>
+        <input id="username" type="text" autocomplete="username" placeholder="admin">
+      </div>
+      <div class="field" style="margin-bottom:8px;">
+        <label for="password">Contraseña</label>
+        <input id="password" type="password" autocomplete="current-password" placeholder="••••••••">
+      </div>
+
+      <p id="error" class="hidden" style="color:var(--danger); font-size:13.5px; margin:6px 0 0;"></p>
+
+      <button id="btnLogin" class="btn" style="width:100%; margin-top:16px;">Entrar</button>
+
+      <div class="hint">
+        <b>Usuarios de prueba</b><br>
+        admin / admin123 &nbsp;·&nbsp; encargado / encargado123
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    // Si ya hay sesión activa, ir directo al sistema.
+    if (sessionStorage.getItem('auth')) {
+      location.href = 'index.html';
+    }
+
+    async function login() {
+      const user = $('username').value.trim();
+      const pass = $('password').value;
+      const errEl = $('error');
+      errEl.classList.add('hidden');
+
+      if (!user || !pass) {
+        errEl.textContent = 'Escribe tu usuario y contraseña.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      const token = btoa(user + ':' + pass);
+      try {
+        const resp = await fetch('api/auth/me', {
+          headers: { 'Authorization': 'Basic ' + token }
+        });
+        if (resp.ok) {
+          const datos = await resp.json();
+          sessionStorage.setItem('auth', token);
+          sessionStorage.setItem('usuario', JSON.stringify(datos));
+          location.href = 'index.html';
+        } else if (resp.status === 401) {
+          errEl.textContent = 'Usuario o contraseña incorrectos.';
+          errEl.classList.remove('hidden');
+        } else {
+          errEl.textContent = 'No se pudo iniciar sesión (error ' + resp.status + ').';
+          errEl.classList.remove('hidden');
+        }
+      } catch (e) {
+        errEl.textContent = 'No se pudo conectar con el servidor. ¿Está corriendo en el puerto 8080?';
+        errEl.classList.remove('hidden');
+      }
+    }
+
+    $('btnLogin').addEventListener('click', login);
+    $('password').addEventListener('keydown', (e) => { if (e.key === 'Enter') login(); });
+    $('username').addEventListener('keydown', (e) => { if (e.key === 'Enter') login(); });
+  </script>
+</body>
+</html>

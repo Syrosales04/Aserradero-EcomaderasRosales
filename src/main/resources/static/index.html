@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ECOMADERAS ROSALES · Sistema de rendimiento</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="logo"></span>
+        <b>ECOMADERAS<br>ROSALES</b>
+      </div>
+      <nav id="nav">
+        <button class="navlink" data-view="dashboard"><span class="ic"></span> Panel</button>
+        <button class="navlink" data-view="ingresos"><span class="ic"></span> Ingreso de madera</button>
+        <button class="navlink" data-view="procesamientos"><span class="ic"></span> Procesamiento</button>
+        <button class="navlink" data-view="inventario"><span class="ic"></span> Inventario</button>
+        <button class="navlink" data-view="ventas"><span class="ic"></span> Ventas</button>
+        <button class="navlink" data-view="comprasprov"><span class="ic"></span> Facturas proveedor</button>
+        <button class="navlink" data-view="proveedores"><span class="ic"></span> Proveedores</button>
+        <button class="navlink" data-view="clientes"><span class="ic"></span> Clientes</button>
+        <button class="navlink" data-view="reportes"><span class="ic"></span> Reportes</button>
+        <button class="navlink" data-view="usuarios" data-admin="true"><span class="ic"></span> Usuarios</button>
+      </nav>
+      <div class="spacer"></div>
+      <div class="userbox">
+        <div class="name" id="userName">—</div>
+        <div class="role" id="userRole">—</div>
+        <button class="btn btn-logout small" id="btnLogout">Cerrar sesión</button>
+      </div>
+    </aside>
+
+    <main class="main" id="content">
+      <!-- app.js inyecta cada vista aquí -->
+    </main>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

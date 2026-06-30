@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-AserraderoApplication<aserradero-rendimiento>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.aserradero.AserraderoApplication",
+            "projectName": "aserradero-rendimiento",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
